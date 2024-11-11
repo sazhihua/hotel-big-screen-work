@@ -141,7 +141,7 @@ def get_hotel_heat_map_view(request):
         pipeline = [
             {
                 "$group": {
-                    "_id": "$hotel_city_name",  # 按照 hotel_city_name 字段分组
+                    "_id": "$hotel_location.hotel_city_name",  # 按照 hotel_city_name 字段分组
                     "count": {"$sum": 1}  # 统计每个城市的数量
                 }
             },
@@ -153,17 +153,17 @@ def get_hotel_heat_map_view(request):
         results = list(HotelInfo.objects.aggregate(*pipeline))
         return JsonResponse({'data': results})
     elif query_city == 'beijing':
-        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_city_name='北京').only('hotel_location_info',
-                                                                                          'hotel_city_name',
+        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='北京').only('hotel_location.hotel_location_info',
+                                                                                          'hotel_location.hotel_city_name',
                                                                                           'hotel_name')
     elif query_city == 'tianjin':
-        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_city_name='天津').only('hotel_location_info',
-                                                                                          'hotel_city_name',
+        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='天津').only('hotel_location.hotel_location_info',
+                                                                                          'hotel_location.hotel_city_name',
                                                                                           'hotel_name')
     elif query_city == 'mix':
-        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_city_name__in=['天津', '北京']).only(
-            'hotel_location_info',
-            'hotel_city_name',
+        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name__in=['天津', '北京']).only(
+            'hotel_location.hotel_location_info',
+            'hotel_location.hotel_city_name',
             'hotel_name')
     # for hotel_info in hotel_infos:
     #     address = hotel_info.hotel_city_name + hotel_info.hotel_name + hotel_info.hotel_location_info
@@ -172,7 +172,7 @@ def get_hotel_heat_map_view(request):
     #         results.append(lng_lat_info)
     #         time.sleep(1 / 3)
     for hotel_info in hotel_infos:
-        address = hotel_info.hotel_city_name + hotel_info.hotel_name + hotel_info.hotel_location_info
+        address = hotel_info.hotel_location.hotel_city_name + hotel_info.hotel_name + hotel_info.hotel_locaton.hotel_location_info
         lng_lat_info = get_district_from_address_baidu(address)
         if lng_lat_info is not None:
             results.append(lng_lat_info)
@@ -209,7 +209,7 @@ def get_room_detail_view(request):
     search_hotel_name = request.GET.get('roomName')
 
     # 假设传入的 data 是查询条件
-    hotel_info = HotelInfo.objects(hotel_name__regex=search_hotel_name, hotel_city_name=search_hotel_city).first()
+    hotel_info = HotelInfo.objects(hotel_name__regex=search_hotel_name, hotel_location__hotel_city_name=search_hotel_city).first()
 
     # 获取到 hotel_id
     hotel_id = hotel_info.hotel_id if hotel_info else None
@@ -267,7 +267,7 @@ def get_count_by_type_view(request):
             {
                 '$match': {  # 过滤掉 hotel_grade_text 为 null 或者为空字符串的记录
                     'hotel_grade_text': {'$ne': None},
-                    'hotel_city_name': {'$eq': request.GET.get('var1')}
+                    'hotel_location.hotel_city_name': {'$eq': request.GET.get('var1')}
                 }
             },
             {
@@ -288,7 +288,7 @@ def get_count_by_type_view(request):
             {
                 '$match': {  # 过滤掉 hotel_grade_text 为 null 或者为空字符串的记录
                     'hotel_grade_text': {'$ne': None},
-                    'hotel_city_name': {'$eq': request.GET.get('var2')}
+                    'hotel_location.hotel_city_name': {'$eq': request.GET.get('var2')}
                 }
             },
             {

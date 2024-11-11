@@ -3,7 +3,7 @@ from traceback import print_tb
 import pandas as pd
 import requests
 
-from .models import HotelInfo, HotelRoom, RoomMapping
+from .models import HotelInfo, HotelRoom, RoomMapping, LocationEmbedded
 
 
 def import_hotel_data(excel_file):
@@ -35,10 +35,13 @@ def import_hotel_data(excel_file):
             hotel_id=str(row['hotel_id']),
             hotel_score=row['hotel_score'],
             hotel_image_id=str(row['hotel_image_id']),
-            hotel_location_info=str(row['hotel_location_info']),
+            # hotel_location_info=str(row['hotel_location_info']),
             hotel_grade_text=grade_mapping.get(row['hotel_grade_text'], None),
             hotel_comment_desc=comment_mapping.get(row['hotel_comment_desc'], None),
-            hotel_city_name=str(row['hotel_city_name'])
+            # hotel_city_name=str(row['hotel_city_name'])
+            hotel_location=LocationEmbedded(hotel_city_name=str(row['hotel_city_name']),
+                                            hotel_location_info=str(row['hotel_location_info'])
+                                            ),
         )
         hotel_info.save()
 
@@ -81,6 +84,7 @@ def import_all_data():
     import_hotel_data(hotel_data_path)
     import_room_data(hotel_room_path)
     print('数据导入成功')
+
 
 def get_district_from_address_baidu(address):
     ak = "RrKFesYlIOoTd4BPD4vBDxkfOtffUZk2"  # 替换成你申请的百度地图API密钥
