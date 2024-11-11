@@ -1,0 +1,1491 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>酒店大数据分析平台</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script type="text/javascript" src='{% static 'js/jquery.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/echarts.min.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/china.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/china.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/beijing.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/tianjin.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/bmap.js' %}'></script>
+    <script type="text/javascript"
+            src="https://api.map.baidu.com/api?v=3.0&ak=wKQYoEPgjDmP298eCyQqI5QKjpzg2Iih"></script>
+    <link rel="stylesheet" href='{% static 'css/style.css' %}'>
+    <style>
+        body {
+            color: #fff;
+            font-size: 16px;
+            background: #033c76 url('{% static 'img/bg1.png' %}') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .mapc {
+            background: url('{% static 'img/bg3.png' %}') no-repeat center center;
+            background-size: 100% 100%
+        }
+
+        .yq:before {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            content: "";
+            background: url('{% static 'img/img1.png' %}') center center;
+            border-radius: 100px;
+            background-size: 100% 100%;
+            opacity: .3;
+            left: 0;
+            top: 0;
+            animation: myfirst2 15s infinite linear;
+        }
+
+        .yq:after {
+            position: absolute;
+            width: 86%;
+            background: url('{% static 'img/img2.png' %}') center center;
+            border-radius: 100px;
+            background-size: 100% 100%;
+            opacity: .3;
+            height: 86%;
+            content: "";
+            left: 7%;
+            top: 7%;
+            animation: myfirst 15s infinite linear;
+        }
+
+        /* 使下拉菜单背景透明 */
+        .dropdown-menu {
+            border: none; /* 去掉边框 */
+        }
+
+        /* 设置按钮背景为透明 */
+        .dropdown-toggle {
+            background-color: rgba(0, 0, 0, 0); /* 半透明按钮背景 */
+            color: white; /* 按钮文字为白色 */
+        }
+
+        /* 使dropdown的按钮和菜单居中 */
+        .dropdown {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 鼠标悬停时，按钮背景变为蓝色 */
+        .dropdown-toggle:hover {
+            background-color: rgba(31, 174, 234, 0.8); /* 设置蓝色背景 */
+            color: white; /* 文字保持为白色 */
+        }
+
+        /* 鼠标悬停时，菜单项背景变为蓝色 */
+        .dropdown-item:hover {
+            background-color: rgba(31, 174, 234, 0.8); /* 设置蓝色背景 */
+            color: white; /* 文字保持为白色 */
+        }
+
+        /* 鼠标悬浮时，填充颜色变为黑色 */
+        .bi-arrow-return-left:hover {
+            fill: #0d6efd;
+        }
+
+        .bi-life-preserver:hover {
+            fill: #0d6efd;
+        }
+
+        .topRec_List dl,
+        .maquee {
+            width: 90%;
+            overflow: hidden;
+            margin: 0 auto;
+            color: #f0ece2
+        }
+
+        .topRec_List dd {
+            float: left;
+            text-align: left;
+            border-bottom: 1px solid #1B96EE;
+            color: #1B96EE;
+            font-size: 14px;
+        }
+
+        .topRec_List dl dd:nth-child(1) {
+            width: 50%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List dl dd:nth-child(2) {
+            width: 30%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List dl dd:nth-child(3) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .maquee {
+            height: 195px;
+        }
+
+        .topRec_List ul {
+            width: 100%;
+            height: 195px;
+        }
+
+        .topRec_List li {
+            width: 100%;
+            height: 38px;
+            line-height: 38px;
+            text-align: left;
+            font-size: 12px;
+            color: #76dbd1
+        }
+
+        .topRec_List li div {
+            float: left;
+        }
+
+        .topRec_List li div:nth-child(1) {
+            width: 50%;
+        }
+
+        .topRec_List li div:nth-child(2) {
+            width: 30%;
+        }
+
+        .topRec_List li div:nth-child(3) {
+            width: 20%;
+        }
+
+        .topRec_List_1 dl,
+        .maquee {
+            width: 90%;
+            overflow: hidden;
+            margin: 0 auto;
+            color: #f0ece2
+        }
+
+        .topRec_List_1 dd {
+            float: left;
+            text-align: left;
+            border-bottom: 1px solid #1B96EE;
+            color: #1B96EE;
+            font-size: 14px;
+        }
+
+        .topRec_List_1 dl dd:nth-child(1) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List_1 dl dd:nth-child(2) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List_1 dl dd:nth-child(3) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List_1 dl dd:nth-child(4) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List_1 dl dd:nth-child(5) {
+            width: 20%;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .topRec_List_1 ul {
+            width: 100%;
+            height: 195px;
+        }
+
+        .topRec_List_1 li {
+            width: 100%;
+            height: 38px;
+            line-height: 38px;
+            text-align: left;
+            font-size: 12px;
+            color: #76dbd1
+        }
+
+        .topRec_List_1 li div {
+            float: left;
+        }
+
+        .topRec_List_1 li div:nth-child(1) {
+            width: 20%;
+        }
+
+        .topRec_List_1 li div:nth-child(2) {
+            width: 20%;
+        }
+
+        .topRec_List_1 li div:nth-child(3) {
+            width: 15%;
+        }
+
+        .topRec_List_1 li div:nth-child(4) {
+            width: 15%;
+        }
+
+        .topRec_List_1 li div:nth-child(5) {
+            width: 30%;
+        }
+
+        #searchInput::placeholder {
+            color: white;
+        }
+
+        /* Set border for the dropdown button */
+        #dropdownMenuButton {
+            border: 1px solid white;
+        }
+
+        /* 父容器设置相对定位，创建新的堆叠上下文 */
+        .boxnav {
+            position: relative; /* 创建堆叠上下文 */
+        }
+
+        /* 设置map的高度为父容器的90% */
+        #map {
+            position: absolute; /* 设置为绝对定位 */
+            top: 0; /* 让它从顶部开始 */
+            left: 0; /* 让它从左侧开始 */
+            width: 100%; /* 占满父容器的宽度 */
+            height: 100%; /* 高度设置为父容器的90% */
+            z-index: 0; /* 保证它位于底层 */
+        }
+
+        /* 其他元素保持默认z-index，或明确设置为高于map的值 */
+        #backButton,
+        #switchButton,
+        #switchText {
+            position: relative; /* 相对定位 */
+            z-index: 1; /* 确保它们位于map上面 */
+        }
+
+    </style>
+</head>
+<body>
+<div class="head clearfix">
+    <h1 class="" style="font-family: 黑体,serif">酒店大数据分析平台</h1>
+    {#    <div class="menu menu2 pulll_left">#}
+    {#        <ul>#}
+    {#            <li><a href="#">导航标题</a></li>#}
+    {#            <li><a href="#">导航标题样式</a></li>#}
+    {#            <li><a href="#">导航标题</a></li>#}
+    {#            <li><a href="#">导航标题</a></li>#}
+    {#            <li><a href="#">导航标题</a></li>#}
+    {#            <li><a href="#">导航标题</a></li>#}
+    {#        </ul>#}
+    {#    </div>#}
+    <div class="time" id="showTime">加载中...</div>
+
+</div>
+<div class="mainbox">
+
+    <ul class="clearfix nav1">
+        <li style="width: 22%">
+            <div class="box">
+                <div class="tit">信息统计</div>
+                <div class="boxnav" style="height: 330px;">
+                    <div class="yqlist">
+                        <ul class="clearfix">
+                            <li>
+                                <div class="yq" id="syjds">加载中...</div>
+                                <span>所有酒店数</span></li>
+                            <li>
+                                <div class="yq" id="gdjds">加载中...</div>
+                                <span>高档酒店数</span></li>
+                            <li>
+                                <div class="yq" id="gfjds">加载中...</div>
+                                <span>高分酒店数</span></li>
+                            <li>
+                                <div class="yq" id="dfjds">加载中...</div>
+                                <span>低分酒店数</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="tit">
+                    <span>分类统计</span>
+                    <div class="dropdown ms-3">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="cityDropdown_1"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid white;">
+                            选择城市
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '北京'">北京</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '成都'">成都</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '重庆'">重庆</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '广州'">广州</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '上海'">上海</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_1').textContent = '天津'">天津</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown ms-3">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="cityDropdown_2"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid white;">
+                            选择城市
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '北京'; updateFltj(document.getElementById('cityDropdown_1').textContent, '北京')">北京</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '成都'; updateFltj(document.getElementById('cityDropdown_1').textContent, '成都')">成都</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '重庆'; updateFltj(document.getElementById('cityDropdown_1').textContent, '重庆')">重庆</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '广州'; updateFltj(document.getElementById('cityDropdown_1').textContent, '广州')">广州</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '上海'; updateFltj(document.getElementById('cityDropdown_1').textContent, '上海')">上海</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown_2').textContent = '天津'; updateFltj(document.getElementById('cityDropdown_1').textContent, '天津')">天津</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="boxnav">
+                    <div class="" style="height: 406px" id="fltj">加载中...</div>
+                </div>
+            </div>
+        </li>
+        <li style="width: 56%">
+
+            <div class="box">
+                <div class="boxnav mapc" style="height: 550px;">
+                    <button id="switchButton" class="btn switch-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                             class="bi bi-life-preserver" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm6.43-5.228a7.025 7.025 0 0 1-3.658 3.658l-1.115-2.788a4.015 4.015 0 0 0 1.985-1.985l2.788 1.115zM5.228 14.43a7.025 7.025 0 0 1-3.658-3.658l2.788-1.115a4.015 4.015 0 0 0 1.985 1.985L5.228 14.43zm9.202-9.202-2.788 1.115a4.015 4.015 0 0 0-1.985-1.985l1.115-2.788a7.025 7.025 0 0 1 3.658 3.658zm-8.087-.87a4.015 4.015 0 0 0-1.985 1.985L1.57 5.228A7.025 7.025 0 0 1 5.228 1.57l1.115 2.788zM8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        </svg>
+                    </button>
+                    <button id="backButton" class="btn back-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                             class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                    </button>
+                    <text id="switchText" style="visibility: hidden;">0</text>
+                    <div class="map" id="map">加载中...</div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="tit d-flex align-items-center">
+                    <span>酒店房间详细数据</span>
+                    <div class="dropdown ms-3">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="cityDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="border: 1px solid white;">
+                            选择城市
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '北京'">北京</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '成都'">成都</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '重庆'">重庆</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '广州'">广州</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '上海'">上海</a></li>
+                            <li><a class="dropdown-item" href="#"
+                                   onclick="document.getElementById('cityDropdown').textContent = '天津'">天津</a></li>
+                        </ul>
+                    </div>
+                    <input type="text" class="form-control" id="searchInput" placeholder="输入酒店名称搜索"
+                           style="background-color:rgba(0,0,0,0); color:white; width: 200px; margin-left: 10px; border: 1px solid white;">
+                </div>
+
+                <div class="boxnav" style="height: 250px;" id="fjtj">
+                    <div class="com-screen-content">
+                        <div class="topRec_List_1">
+                            <dl>
+                                <dd>房间名称</dd>
+                                <dd>房间图片</dd>
+                                <dd>房间大小</dd>
+                                <dd>房间价格</dd>
+                                <dd>附加信息</dd>
+                            </dl>
+                            <div class="maquee">
+                                <ul id="marqueeList_2" style="margin-top: 0px;">
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li style="width: 22%">
+            <div class="box">
+                <div class="tit">酒店评分</div>
+                <div class="boxnav" id="jdpf" style="height: 200px;">
+                    加载中...
+                </div>
+            </div>
+            <div class="box">
+                <div class="tit d-flex align-items-center">
+                    <span style="margin-right:18px;">评分与最高价格关系图</span>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            总体评分
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('0')">总体评分</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('3')">三星级酒店</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('4')">四星级酒店</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('5')">五星级酒店</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('11')">高档型酒店</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('12')">豪华型酒店</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('13')">经济型酒店</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="selectOption('14')">舒适型酒店</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="boxnav" style="height: 250px;" id="pfjggx">
+                    加载中...
+                </div>
+            </div>
+            <div class="box">
+                <div class="tit">高分评价酒店</div>
+                <div class="boxnav" style="height: 250px;" id="gfpj">
+                    <div class="com-screen-content">
+                        <div class="topRec_List">
+                            <dl>
+                                <dd>酒店名称</dd>
+                                <dd>酒店图片</dd>
+                                <dd>评价</dd>
+                            </dl>
+                            <div class="maquee">
+                                <ul id="marqueeList" style="margin-top: 0px;">
+                                    加载中...
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<script>
+    var t = null;
+    t = setTimeout(time, 1000); // 开始运行
+
+    function time() {
+        clearTimeout(t); // 清除定时器
+        var dt = new Date();
+        var y = dt.getFullYear();
+        var mt = dt.getMonth() + 1;
+        var day = dt.getDate();
+        var h = dt.getHours(); // 获取小时
+        var m = dt.getMinutes(); // 获取分钟
+        var s = dt.getSeconds(); // 获取秒
+
+        // 使用 padStart() 来确保单个数字前面有0
+        h = String(h).padStart(2, '0');
+        m = String(m).padStart(2, '0');
+        s = String(s).padStart(2, '0');
+
+        // 设置显示时间
+        document.getElementById("showTime").innerHTML = y + "/" + mt + "/" + day + " " + h + ":" + m + ":" + s;
+        t = setTimeout(time, 1000); // 设置定时器，循环运行
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        // 发送 Ajax 请求获取数据
+        $.ajax({
+            url: '/api/getCount/',  // 确保你的 URL 路由正确
+            method: "GET",
+            success: function (data) {
+                // 使用返回的数据更新 DOM 元素
+                if (data.data) {
+                    console.log(data);
+                    $('#syjds').text(data.syjds);
+                    $('#gdjds').text(data.gdjds);
+                    $('#gfjds').text(data.gfjds);
+                    $('#dfjds').text(data.dfjds);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("请求失败: ", error);
+            }
+        });
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    $().ready(function () {
+        $.ajax({
+            url: '/api/getScores/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // 检查返回的数据结构
+                if (data.data) {
+                    console.log(data);
+                    var myChart_jdpf = echarts.init(document.getElementById('jdpf'), 'light');
+
+                    // 从 data.data 中提取名称和值
+                    let nameList = ['平均分', '中位数', '最高分', '最低分', '众数'];
+                    let dataList_zt = [
+                        data.zt.average,
+                        data.zt.median,
+                        data.zt.max,
+                        data.zt.min,
+                        data.zt.mode
+                    ];
+                    let dataList_jjx = [
+                        data.jjx.average,
+                        data.jjx.median,
+                        data.jjx.max,
+                        data.jjx.min,
+                        data.jjx.mode
+                    ];
+                    let dataList_gdx = [
+                        data.gdx.average,
+                        data.gdx.median,
+                        data.gdx.max,
+                        data.gdx.min,
+                        data.gdx.mode
+                    ];
+
+                    var option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: '{b}: {c}',
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#dddc6b'
+                                }
+                            }
+                        },
+                        grid: {
+                            left: '10',
+                            top: '20',
+                            right: '30',
+                            bottom: '10',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            data: nameList,
+                            type: 'category',
+                            boundaryGap: false,
+                            axisLabel: {
+                                textStyle: {
+                                    color: "rgba(255,255,255,.6)",
+                                    fontSize: 14,
+                                },
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)'
+                                },
+                                axisPointer: {show: false},
+                                axisLine: {show: false},
+                                position: 'bottom',
+                                offset: 20,
+                            },
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisTick: {show: false},
+                            splitNumber: 4,
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)'
+                                }
+                            },
+                            axisLabel: {
+                                textStyle: {
+                                    color: "rgba(255,255,255,.6)",
+                                    fontSize: 16,
+                                },
+                            },
+
+                            splitLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)',
+                                    type: 'dotted',
+                                }
+                            }
+                        },
+                        series: [
+                            {
+                                name: '总体评分',
+                                type: 'line',
+                                data: dataList_zt,
+                                smooth: true,
+                                symbol: 'circle',
+                                symbolSize: 5,
+                                showSymbol: false,
+                                lineStyle: {
+                                    normal: {
+                                        color: 'rgba(31, 174, 234, 1)',
+                                        width: 2
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#1f7eea',
+                                        borderColor: 'rgba(31, 174, 234, .1)',
+                                        borderWidth: 5
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0,
+                                            color: 'rgba(31, 174, 234, 0.4)'
+                                        }, {
+                                            offset: 0.8,
+                                            color: 'rgba(31, 174, 234, 0.1)'
+                                        }], false),
+                                        shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                    }
+                                },
+                                emphasis: {
+                                    focus: 'series' // 鼠标悬停时高亮整个系列
+                                }
+                            },
+                            {
+                                name: '经济型评分',
+                                type: 'line',
+                                data: dataList_jjx,
+                                smooth: true,
+                                symbol: 'circle',
+                                symbolSize: 5,
+                                showSymbol: false,
+                                lineStyle: {
+                                    normal: {
+                                        color: 'rgba(76, 175, 80, 1)',  // 修改为绿色
+                                        width: 2
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#4caf50',  // 修改为绿色
+                                        borderColor: 'rgba(76, 175, 80, .1)',
+                                        borderWidth: 5
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0,
+                                            color: 'rgba(76, 175, 80, 0.4)'  // 绿色渐变色
+                                        }, {
+                                            offset: 0.8,
+                                            color: 'rgba(76, 175, 80, 0.1)'  // 绿色渐变色
+                                        }], false),
+                                        shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                    }
+                                },
+                                emphasis: {
+                                    focus: 'series' // 鼠标悬停时高亮整个系列
+                                }
+                            },
+                            {
+                                name: '高档型评分',
+                                type: 'line',
+                                data: dataList_gdx,
+                                smooth: true,
+                                symbol: 'circle',
+                                symbolSize: 5,
+                                showSymbol: false,
+                                lineStyle: {
+                                    normal: {
+                                        color: 'rgba(255, 99, 132, 1)',  // 保持原来的红色
+                                        width: 2
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#ff6384',  // 保持原来的红色
+                                        borderColor: 'rgba(255, 99, 132, .1)',
+                                        borderWidth: 5
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                            offset: 0,
+                                            color: 'rgba(255, 99, 132, 0.4)'  // 保持原来的渐变色
+                                        }, {
+                                            offset: 0.8,
+                                            color: 'rgba(255, 99, 132, 0.1)'  // 保持原来的渐变色
+                                        }], false),
+                                        shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                    }
+                                },
+                                emphasis: {
+                                    focus: 'series' // 鼠标悬停时高亮整个系列
+                                }
+                            }
+                        ],
+                        legend: {
+                            right: '10',  // 将图例放置到右边
+                            top: '0',  // 将图例放置到顶部
+                            textStyle: {
+                                color: '#ffffff'  // 设置图例的字体颜色为白色
+                            },
+                            itemWidth: 10,  // 图例标识的宽度
+                            itemHeight: 10,  // 图例标识的高度
+                            data: ['总体评分', '经济型评分', '高档型评分'],
+                            selected: {
+                                '经济型评分': false,  // 默认不选中
+                                '高档型评分': false   // 默认不选中
+                            },
+                        }
+                    };
+                    myChart_jdpf.setOption(option);
+                    window.addEventListener("resize", function () {
+                        myChart_jdpf.resize();
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX请求失败:', error);
+            }
+        })
+    })
+</script>
+<script>
+    var __option = {
+        '0': '总体评分',
+        '3': '三星级酒店',
+        '4': '四星级酒店',
+        '5': '五星级酒店',
+        '11': '高档型酒店',
+        '12': '豪华型酒店',
+        '13': '经济型酒店',
+        '14': '舒适型酒店'
+    }
+    $(document).ready(function () {
+        // 设置默认选中“总体评分”
+        $('#dropdownMenuButton').text(__option['0']);
+        // 默认选择"总体评分"，并加载相关数据
+        selectOption('0');
+    });
+
+    // 选择评分类型时的回调函数
+    function selectOption(option) {
+        console.log("选择了：" + option);
+        $('#dropdownMenuButton').text(__option[option]);
+        // AJAX 请求数据，根据选择的评分类型更新图表
+        $.ajax({
+            url: '/api/getScorePriceRelationship/',  // 你的 API URL
+            type: 'GET',
+            dataType: 'json',
+            data: {"option": option},  // 如果需要传递选中的评分类型，可以在这里传递
+            success: function (data) {
+                // 检查返回的数据结构
+                if (data.data) {
+                    console.log(data);
+                    var myChart_pfjggx = echarts.init(document.getElementById('pfjggx'), 'light');
+
+                    // 从 data.data 中提取名称和值
+                    const hotelData = data.data;
+
+                    const scores = hotelData.map(item => item.hotel_score);
+                    const prices = hotelData.map(item => item.max_room_price);
+                    const grades = hotelData.map(item => item.hotel_grade_text);
+
+                    var minScore = Math.min(...hotelData.map(item => item.hotel_score));  // 获取最低的评分
+
+                    var option = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function (params) {
+                                return '评分: ' + params.data[0] + '<br/>最高房间价格: ' + params.data[1];
+                            },
+                            axisPointer: {
+                                lineStyle: {
+                                    color: '#dddc6b'
+                                }
+                            }
+                        },
+                        grid: {
+                            left: '10',
+                            top: '20',
+                            right: '30',
+                            bottom: '10',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            name: '评分',  // 横轴名称
+                            nameLocation: 'middle',  // 横轴名称的位置
+                            nameTextStyle: {
+                                color: 'rgba(255,255,255,.6)',  // 横轴名称的颜色
+                                fontSize: 14
+                            },
+                            nameGap: 25,  // 控制轴名称与数字之间的距离
+                            type: 'value',
+                            min: minScore,
+                            boundaryGap: false,
+                            axisLabel: {
+                                textStyle: {
+                                    color: "rgba(255,255,255,.6)",
+                                    fontSize: 14
+                                },
+                                margin: 15  // 调整数字与轴之间的距离
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.2)'
+                                }
+                            }
+                        },
+                        yAxis: {
+                            name: '最高房间价格',  // 纵轴名称
+                            nameLocation: 'middle',  // 纵轴名称的位置
+                            nameTextStyle: {
+                                color: 'rgba(255,255,255,.6)',  // 纵轴名称的颜色
+                                fontSize: 16
+                            },
+                            nameGap: 55,  // 控制轴名称与数字之间的距离
+                            type: 'value',
+                            axisTick: {show: false},
+                            splitNumber: 4,
+                            axisLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)'
+                                }
+                            },
+                            axisLabel: {
+                                textStyle: {
+                                    color: "rgba(255,255,255,.6)",
+                                    fontSize: 16,
+                                },
+                                formatter: function (value) {
+                                    // Convert value to K or M for display
+                                    if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(1) + 'M'; // For million
+                                    } else if (value >= 1000) {
+                                        return (value / 1000).toFixed(1) + 'K'; // For thousand
+                                    }
+                                    return value; // If less than 1000, return the value as is
+                                },
+                                margin: 10  // 控制数字与轴之间的距离
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: 'rgba(255,255,255,.1)',
+                                    type: 'dotted',
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '评分与价格关系',
+                            symbolSize: 5,
+                            data: hotelData.map(item => [item.hotel_score, item.max_room_price]),
+                            type: 'scatter',
+                            emphasis: {
+                                itemStyle: {
+                                    color: '#ff5733',
+                                    borderColor: '#ff5733',
+                                    borderWidth: 2
+                                },
+                                symbolSize: 40  // 放大目标点
+                            }
+                        }]
+                    };
+
+                    // 设置 ECharts 配置项
+                    myChart_pfjggx.setOption(option);
+                    window.addEventListener("resize", function () {
+                        myChart_pfjggx.resize();
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX请求失败:', error);
+            }
+        });
+    }
+</script>
+<script>
+    var mapNameChinese = {
+        'china': '中国',
+        'beijing': '北京',
+        'tianjin': '天津',
+    }
+
+    $(function () {
+        var chart = echarts.init(document.getElementById('map'));
+
+        // 加载地图函数
+        function loadMap(mapName, mapJsonPath) {
+            $.getJSON(mapJsonPath, function (geoJson) {
+                console.log('加载的地图数据:', geoJson);  // 打印加载的地图数据
+
+                if (!geoJson) {
+                    console.error("地图数据加载失败！");
+                    return;
+                }
+
+                // 注册地图
+                echarts.registerMap(mapName, geoJson);
+
+                if (mapName == 'china') {
+                    // 隐藏回退按钮
+                    document.getElementById('backButton').style.visibility = 'hidden';
+                } else {
+                    // 显示回退按钮
+                    document.getElementById('backButton').style.visibility = 'visible';
+                }
+
+                $.ajax({
+                    url: '/api/getHotelHeatMap/',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {"mapName": mapName},  // 传递地图名称
+                    success: function (data) {
+                        // 检查返回的数据结构
+                        if (data.data) {
+                            console.log(data);
+                            var heatMapData;
+                            if (mapName == 'china') {
+                                heatMapData = data.data.map(function (feature) {
+                                    var city_coordinates = {
+                                        '广州': [113.264385, 23.129112],
+                                        '天津': [117.190182, 39.125596],
+                                        '上海': [121.473701, 31.230416],
+                                        '北京': [116.407394, 39.904211],
+                                        '重庆': [106.551556, 29.563009],
+                                        '成都': [104.065735, 30.659462]
+                                    };
+                                    return {
+                                        name: feature._id,
+                                        value: [
+                                            city_coordinates[feature._id][0],  // 经度
+                                            city_coordinates[feature._id][1],  // 纬度
+                                            feature.count
+                                        ]
+                                    };
+                                })
+                            } else {
+                                heatMapData = data.data.map(function (item) {
+                                    return {
+                                        name: item.name,  // 假设 'name' 是每个条目的名称
+                                        value: [
+                                            parseFloat(item.jd),
+                                            parseFloat(item.wd),
+                                            1  // 假设这里是示例值，您可以根据实际情况调整数值
+                                        ]
+                                    };
+                                });
+                            }
+                            // 更新图表配置
+                            chart.setOption({
+                                animation: false,
+                                title: {
+                                    text: mapNameChinese[mapName] + '高档型酒店分布热力图',
+                                    {#subtext: '虚拟标题自行更改',#}
+                                    left: 'center',
+                                    top: '40',
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                },
+                                tooltip: {
+                                    trigger: 'item',  // 鼠标悬停触发
+                                    formatter: function (params) {
+                                        // params.name 表示区域名，params.value[2] 表示对应的数值
+                                        return params.name + ' : ' + params.value[2];
+                                    }
+                                },
+                                geo: {
+                                    map: mapName,  // 动态切换地图
+                                    label: {
+                                        emphasis: {
+                                            show: true,
+                                            color: '#fff'
+                                        }
+                                    },
+                                    roam: false,  // 开启地图缩放
+                                    zoom: 1.2,  // 设置缩放级别
+                                    itemStyle: {
+                                        normal: {
+                                            areaColor: 'rgba(2,37,101,.5)',
+                                            borderColor: 'rgba(112,187,252,.5)'
+                                        },
+                                        emphasis: {
+                                            areaColor: 'rgba(2,37,101,.8)'
+                                        }
+                                    }
+                                },
+                                visualMap: {
+                                    show: false,
+                                    top: 20,
+                                    min: 0,
+                                    max: 5,  // 设置热力图强度的最小值和最大值
+                                    seriesIndex: 0,
+                                    calculable: true,  // 显示渐变条
+                                    inRange: {
+                                        color: ['blue', 'green', 'yellow', 'red']  // 设置热力图的颜色范围
+                                    },
+                                    right: 40,
+                                    textStyle: {
+                                        color: 'rgba(255,255,255,.6)' // 修改图例文字的颜色为紫色
+                                    }
+                                },
+                                series: [{
+                                    name: '标题名称',
+                                    type: 'heatmap',
+                                    coordinateSystem: 'geo',
+                                    label: {
+                                        normal: {
+                                            formatter: '{b}',  // 显示区域名称
+                                            position: 'right',
+                                            show: true
+                                        },
+                                        emphasis: {
+                                            show: true
+                                        }
+                                    },
+                                    itemStyle: {
+                                        normal: {
+                                            color: '#ffeb7b'
+                                        }
+                                    },
+                                    data: heatMapData
+                                }]
+                            });
+                            window.addEventListener("resize", function () {
+                                chart.resize();
+                            });
+                        }
+                    }
+                })
+            });
+        }
+
+        // 初始加载中国地图
+        loadMap('china', '{% static "json/china.json" %}');
+
+        // 监听点击事件，点击区域后切换地图
+        chart.on('click', function (params) {
+            console.log('点击区域:', params.name);
+
+            // 判断点击的是哪个区域并加载对应的地图
+            if (params.name === '北京') {
+                loadMap('beijing', '{% static "json/beijing.json" %}');  // 加载北京市地图
+            } else if (params.name === '天津') {
+                loadMap('tianjin', '{% static "json/tianjin.json" %}');  // 加载天津市地图
+            } else {
+                console.log('点击了其他区域:', params.name);
+            }
+        });
+
+        // 回退按钮点击事件，切换回中国地图
+        $('#backButton').click(function () {
+            loadMap('china', '{% static "json/china.json" %}');  // 返回到中国地图
+        });
+
+        $('#switchButton').click(function () {
+            var swtich_mode = $('#switchText').text();
+            if (swtich_mode == '1') {
+                $('#switchText').text('0');
+                var myChart = echarts.init(document.getElementById('map'));
+                myChart.clear();
+                {#$('#map').html('加载中...');#}
+                loadMap('china', '{% static "json/china.json" %}');  // 返回到中国地图
+            } else {
+                $('#switchText').text('1');
+                var myChart = echarts.init(document.getElementById('map'));
+                myChart.clear();
+                {#$('#map').html('加载中...');#}
+                $.ajax({
+                    url: '/api/getHotelHeatMap/',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {"mapName": 'mix'},  // 传递地图名称
+                    success: function (data) {
+                        // 检查返回的数据结构
+                        if (data.data) {
+                            console.log(data);
+                            var heatMapData;
+
+                            heatMapData = data.data.map(function (item) {
+                                return {
+                                    name: item.name,  // 假设 'name' 是每个条目的名称
+                                    value: [
+                                        parseFloat(item.jd),
+                                        parseFloat(item.wd),
+                                        1  // 假设这里是示例值，您可以根据实际情况调整数值
+                                    ]
+                                };
+                            });
+
+                            var myChart = echarts.init(document.getElementById('map'));
+                            {#myChart.clear();#}
+                            var option = {
+                                animation: false,
+                                bmap: {
+                                    center: [116.4074, 39.9042],  // 北京的经纬度
+                                    zoom: 8,
+                                    roam: true,
+                                },
+                                visualMap: {
+                                    show: false,
+                                    top: 'top',
+                                    min: 0,
+                                    max: 5,
+                                    seriesIndex: 0,
+                                    calculable: true,
+                                    inRange: {
+                                        color: ['blue', 'blue', 'green', 'yellow', 'red']
+                                    }
+                                },
+                                series: [
+                                    {
+                                        type: 'heatmap',
+                                        coordinateSystem: 'bmap',
+                                        data: heatMapData,
+                                        pointSize: 5,
+                                        blurSize: 6
+                                    }
+                                ]
+                            };
+                            myChart.setOption(option);
+                            window.addEventListener("resize", function () {
+                                myChart.resize();
+                            });
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>
+<script>
+    function autoScroll(obj) {
+        $(obj).find("ul").animate({
+            marginTop: "-39px"
+        }, 500, function () {
+            $(this).css({marginTop: "0px"}).find("li:first").appendTo(this);
+        })
+    }
+
+    $(function () {
+        setInterval('autoScroll(".maquee")', 2000);
+    })
+</script>
+<script>
+    $().ready(function () {
+        $.ajax({
+            url: '/api/getHighScoreComment/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log('右下角');
+                console.log(data);
+                // 假设返回的 data 是一个数组，每个元素是一个对象，包含标题、来源和时间
+                var newContent = '';
+
+                // 遍历返回的数组，并构建新的 HTML 内容
+                data.data.forEach(function (item) {
+                    // 获取酒店名称的前四个字
+                    var hotelNameShort = item.hotel_name.length > 8 ? item.hotel_name.slice(0, 8) + '...' : item.hotel_name;
+
+                    // 假设 hotel_image_id 是图片 URL
+                    var hotelImageUrl = item.hotel_image_id; // 你可以根据实际情况修改这个
+
+                    newContent += '<li>';
+                    newContent += '<div>' + hotelNameShort + '</div>';  // 显示酒店名称的前四个字
+                    newContent += '<div><img src="' + hotelImageUrl + '" alt="酒店图片" style="width: 40px;"></div>';  // 显示酒店图片
+                    newContent += '<div style="display: flex; align-items: center;">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="yellow" class="bi bi-star-fill" viewBox="0 0 16 16">' +
+                        '<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>' +
+                        '</svg>' +
+                        ' ' + item.hotel_comment_desc +
+                        '</div>';
+                    newContent += '</li>';
+                });
+
+                // 将新内容更新到 ul 中
+                $('#marqueeList').html(newContent);
+            },
+            error: function (error) {
+                console.log("Error loading data: ", error);
+            }
+        })
+    })
+</script>
+<script>
+    $('#searchInput').on('keypress', function (event) {
+        // 检测是否按下了回车键
+        if (event.which === 13) {  // 13 是回车键的 keyCode
+            var roomName = $(this).val();  // 获取输入框的值
+            var roomCity = document.getElementById('cityDropdown').textContent;  // 获取城市选择框的值
+            // 执行 AJAX 请求
+            $.ajax({
+                url: '/api/getRoomDetail/',  // 替换为你的 API 地址
+                method: 'GET',  // 根据你的需求可以是 POST
+                data: {roomCity: roomCity, roomName: roomName},  // 将输入框的值作为查询参数传递
+                dataType: 'json',
+                success: function (data) {
+                    // 假设响应的格式是 JSON，并且包含你需要的数据
+                    var newContent = '';
+                    data.data.forEach(function (item) {
+                        var hotelNameShort = item.room_name.length > 8 ? item.room_name.slice(0, 8) + '...' : item.room_name;
+                        var room_additional_info = item.room_bed_type + (item.room_exist_num == '未知' ? '' : ',' + item.room_exist_num) + ',' + item.room_breakfast_num + ',' + item.room_window + ',' + (item.room_wifi == '1' ? '有wifi' : '无wifi');
+                        room_additional_info = room_additional_info.length > 30 ? room_additional_info.slice(0, 30) + '...' : room_additional_info;
+                        newContent += '<li>';
+                        newContent += '<div>' + hotelNameShort + '</div>';
+                        newContent += '<div><img src="' + item.room_image_url + '" alt="房间图片" style="width: 50px;" /></div>';
+                        newContent += '<div>' + item.room_area + ' m²</div>';
+                        newContent += '<div>' + item.room_price + ' 元/晚</div>';
+                        newContent += '<div>' + room_additional_info + '</div>';
+                        newContent += '</li>';
+                    });
+
+                    // 将获取到的数据更新到页面中
+                    $('#marqueeList_2').html(newContent);
+                },
+                error: function () {
+                    console.log('请求失败，请稍后再试');
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $().ready(function () {
+        $.ajax({
+            url: '/api/getCountByType/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // 检查返回的数据结构
+                if (data.data) {
+                    console.log(data);
+                    var myChart_fltj = echarts.init(document.getElementById('fltj'));
+                    var typeName = [];
+                    var typeCount = [];
+                    data.data.forEach(function (item) {
+                        typeName.push(__option[item._id]);  // 将 _id (城市名称) 添加到 typeName 数组
+                        typeCount.push(item.count);  // 将 count (数量) 添加到 typeCount 数组
+                    });
+                    var options = {
+                        grid: {
+                            left: '0',
+                            top: '0',
+                            right: '0',
+                            bottom: '0%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            show: false
+                        },
+                        yAxis: [{
+                            show: true,
+                            data: typeName,
+                            inverse: true,
+                            axisLine: {show: false},
+                            splitLine: {show: false},
+                            axisTick: {show: false},
+                            axisLabel: {
+                                textStyle: {
+                                    color: '#fff'
+                                },
+                            },
+                        }],
+                        series: [{
+                            name: '条',
+                            type: 'bar',
+                            yAxisIndex: 0,
+                            data: typeCount,
+                            barWidth: 15,
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: 50,
+                                    // 使用不同的颜色
+                                    color: function (params) {
+                                        // 你可以自定义颜色数组，或者根据某些规则设置颜色
+                                        var colors = ['#1089E7', '#FF9F7F', '#F8C225', '#5B9BD5', '#F84D4D'];
+                                        return colors[params.dataIndex % colors.length]; // 循环使用颜色
+                                    }
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: '{c}',
+                                    textStyle: {color: 'rgba(255,255,255,.5)'}
+                                }
+                            },
+                        }]
+                    };
+
+                    myChart_fltj.setOption(options);
+                    window.addEventListener("resize", function () {
+                        myChart_fltj.resize();
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX请求失败:', error);
+            }
+        })
+    })
+</script>
+<script>
+    function updateFltj(var1, var2) {
+        $.ajax({
+            url: '/api/getCountByType/',
+            type: 'GET',
+            dataType: 'json',
+            data: {"var1": var1, "var2": var2},  // 如果需要传递选中的评分类型，可以在这里传递
+            success: function (data) {
+                // 检查返回的数据结构
+                if (data.data) {
+                    console.log(data);
+                    var myChart_fltj = echarts.init(document.getElementById('fltj'));
+                    var typeName1 = [];
+                    var typeName2 = [];
+                    var typeCount1 = [];
+                    var typeCount2 = [];
+                    data.results1.forEach(function (item) {
+                        typeName1.push(__option[item._id]);  // 将 _id (城市名称) 添加到 typeName 数组
+                        typeCount1.push(item.count);  // 将 count (数量) 添加到 typeCount 数组
+                    });
+                    data.results2.forEach(function (item) {
+                        typeName2.push(__option[item._id]);  // 将 _id (城市名称) 添加到 typeName 数组
+                        typeCount2.push(item.count);  // 将 count (数量) 添加到 typeCount 数组
+                    });
+                    var options = {
+                        grid: {
+                            left: '0',
+                            top: '0',
+                            right: '0',
+                            bottom: '0%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            show: false
+                        },
+                        yAxis: [{
+                            show: true,
+                            data: typeName1,
+                            inverse: true,
+                            axisLine: {show: false},
+                            splitLine: {show: false},
+                            axisTick: {show: false},
+                            axisLabel: {
+                                textStyle: {
+                                    color: '#fff'
+                                },
+                            },
+                        }],
+                        series: [{
+                            name: '条',
+                            type: 'bar',
+                            yAxisIndex: 0,
+                            data: typeCount1,
+                            barWidth: 15,
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: 50,
+                                    // 使用不同的颜色
+                                    color: function (params) {
+                                        // 你可以自定义颜色数组，或者根据某些规则设置颜色
+                                        var colors = ['#1089E7', '#FF9F7F', '#F8C225', '#5B9BD5', '#F84D4D'];
+                                        return colors[params.dataIndex % colors.length]; // 循环使用颜色
+                                    }
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: '{c}',
+                                    textStyle: {color: 'rgba(255,255,255,.5)'}
+                                }
+                            },
+                        }, {
+                            name: '条',
+                            type: 'bar',
+                            yAxisIndex: 0,
+                            data: typeCount2,
+                            barWidth: 15,
+                            itemStyle: {
+                                normal: {
+                                    barBorderRadius: 50,
+                                    // 使用不同的颜色
+                                    color: function (params) {
+                                        // 你可以自定义颜色数组，或者根据某些规则设置颜色
+                                        var colors = ['#A8D8FF', '#FFB3BA', '#FFDF79', '#90E8B2', '#FF9E9D'];
+                                        return colors[params.dataIndex % colors.length]; // 循环使用颜色
+                                    }
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: '{c}',
+                                    textStyle: {color: 'rgba(255,255,255,.5)'}
+                                }
+                            },
+                        }]
+                    };
+
+                    myChart_fltj.setOption(options);
+                    window.addEventListener("resize", function () {
+                        myChart_fltj.resize();
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX请求失败:', error);
+            }
+        })
+    }
+</script>
+</body>
+</html>
