@@ -153,13 +153,15 @@ def get_hotel_heat_map_view(request):
         results = list(HotelInfo.objects.aggregate(*pipeline))
         return JsonResponse({'data': results})
     elif query_city == 'beijing':
-        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='北京').only('hotel_location.hotel_location_info',
-                                                                                          'hotel_location.hotel_city_name',
-                                                                                          'hotel_name')
+        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='北京').only(
+            'hotel_location.hotel_location_info',
+            'hotel_location.hotel_city_name',
+            'hotel_name')
     elif query_city == 'tianjin':
-        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='天津').only('hotel_location.hotel_location_info',
-                                                                                          'hotel_location.hotel_city_name',
-                                                                                          'hotel_name')
+        hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name='天津').only(
+            'hotel_location.hotel_location_info',
+            'hotel_location.hotel_city_name',
+            'hotel_name')
     elif query_city == 'mix':
         hotel_infos = HotelInfo.objects(hotel_grade_text=11, hotel_location__hotel_city_name__in=['天津', '北京']).only(
             'hotel_location.hotel_location_info',
@@ -209,7 +211,8 @@ def get_room_detail_view(request):
     search_hotel_name = request.GET.get('roomName')
 
     # 假设传入的 data 是查询条件
-    hotel_info = HotelInfo.objects(hotel_name__regex=search_hotel_name, hotel_location__hotel_city_name=search_hotel_city).first()
+    hotel_info = HotelInfo.objects(hotel_name__regex=search_hotel_name,
+                                   hotel_location__hotel_city_name=search_hotel_city).first()
 
     # 获取到 hotel_id
     hotel_id = hotel_info.hotel_id if hotel_info else None
@@ -265,20 +268,20 @@ def get_count_by_type_view(request):
     if request.GET.get('var1') and request.GET.get('var2'):
         pipeline = [
             {
-                '$match': {  # 过滤掉 hotel_grade_text 为 null 或者为空字符串的记录
+                '$match': {
                     'hotel_grade_text': {'$ne': None},
                     'hotel_location.hotel_city_name': {'$eq': request.GET.get('var1')}
                 }
             },
             {
-                '$group': {  # 按照 hotel_grade_text 分组
-                    '_id': '$hotel_grade_text',  # 以 hotel_grade_text 为分组依据
-                    'count': {'$sum': 1}  # 统计每个分组的数量
+                '$group': {
+                    '_id': '$hotel_grade_text',
+                    'count': {'$sum': 1}
                 }
             },
             {
-                '$sort': {  # 可选：按分类名称排序
-                    'hotel_grade_text': -1  # 或者 -1，决定升序或降序
+                '$sort': {
+                    'hotel_grade_text': -1
                 }
             }
         ]
@@ -286,20 +289,20 @@ def get_count_by_type_view(request):
         results1 = list(HotelInfo.objects.aggregate(*pipeline))
         pipeline = [
             {
-                '$match': {  # 过滤掉 hotel_grade_text 为 null 或者为空字符串的记录
+                '$match': {
                     'hotel_grade_text': {'$ne': None},
                     'hotel_location.hotel_city_name': {'$eq': request.GET.get('var2')}
                 }
             },
             {
-                '$group': {  # 按照 hotel_grade_text 分组
-                    '_id': '$hotel_grade_text',  # 以 hotel_grade_text 为分组依据
-                    'count': {'$sum': 1}  # 统计每个分组的数量
+                '$group': {
+                    '_id': '$hotel_grade_text',
+                    'count': {'$sum': 1}
                 }
             },
             {
-                '$sort': {  # 可选：按分类名称排序
-                    'hotel_grade_text': -1  # 或者 -1，决定升序或降序
+                '$sort': {
+                    'hotel_grade_text': -1
                 }
             }
         ]
