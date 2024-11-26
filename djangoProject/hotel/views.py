@@ -24,7 +24,6 @@ def index(request):
 
 # 展示酒店评分的平均分、中位数、最高分、最低分、众数，以数据集中“hotel_score”属性为依据进行展示；
 def get_scores_view(request):
-    # hotel_score = HotelInfo.objects(hotel_score__ne=float('nan')).only('hotel_score')
     hotel_score = HotelInfo.objects(Q(hotel_score__ne=None)).only('hotel_score')
     hotel_score_jjx = HotelInfo.objects(Q(hotel_score__ne=None) & Q(hotel_grade_text=13)).only('hotel_score')
     hotel_score_gdx = HotelInfo.objects(Q(hotel_score__ne=None) & Q(hotel_grade_text=12)).only('hotel_score')

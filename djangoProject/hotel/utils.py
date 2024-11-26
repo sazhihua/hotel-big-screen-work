@@ -95,7 +95,7 @@ def get_district_from_address_baidu(address):
 
     if result['status'] == 0:
         return_info = {'jd': result['result']['location']['lng'], 'wd': result['result']['location']['lat']}
-        return return_info  # 返回所在区的名称
+        return return_info  # 返回所在区域的经纬度
     else:
         return None
 
