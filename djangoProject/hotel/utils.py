@@ -86,9 +86,9 @@ def import_all_data():
     print('数据导入成功')
 
 
-def get_district_from_address_baidu(address):
+def get_district_from_address_baidu(address, city):
     ak = "RrKFesYlIOoTd4BPD4vBDxkfOtffUZk2"  # 替换成你申请的百度地图API密钥
-    url = f"http://api.map.baidu.com/geocoding/v3/?ak={ak}&address={address}&output=json"
+    url = f"http://api.map.baidu.com/geocoding/v3/?ak={ak}&address={address}&city={city}&output=json"
 
     response = requests.get(url)
     result = response.json()

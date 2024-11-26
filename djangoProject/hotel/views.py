@@ -174,7 +174,8 @@ def get_hotel_heat_map_view(request):
     #         time.sleep(1 / 3)
     for hotel_info in hotel_infos:
         address = hotel_info.hotel_location.hotel_city_name + hotel_info.hotel_name + hotel_info.hotel_location.hotel_location_info
-        lng_lat_info = get_district_from_address_baidu(address)
+        city = hotel_info.hotel_location.hotel_city_name
+        lng_lat_info = get_district_from_address_baidu(address, city)
         if lng_lat_info is not None:
             results.append(lng_lat_info)
             time.sleep(1 / 30)
