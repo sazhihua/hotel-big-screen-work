@@ -8,6 +8,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('test/importData/', import_data_view, name='import_data'),  # 添加路径和视图
     path('', index, name='index'),
+    path('chat/', chat, name='chat'),
+    path('api/getChatResult/', chat_with_gpt, name='chat_with_gpt'),
     path('api/getScores/', get_scores_view, name='get_scores_view'),
     path('api/getScorePriceRelationship/', get_score_price_relationship_view, name='get_score_price_relationship_view'),
     path('api/getHotelHeatMap/', get_hotel_heat_map_view, name='get_hotel_heat_map_view'),

@@ -9,6 +9,8 @@ from .utils import *
 import statistics
 from mongoengine import Q
 import requests
+from openai import OpenAI
+from django.views.decorators.csrf import csrf_exempt
 
 
 def import_data_view(request):
@@ -331,3 +333,25 @@ def get_count_by_type_view(request):
         # 执行聚合查询并转换为 List
         results = list(HotelInfo.objects.aggregate(*pipeline))
         return JsonResponse({'data': results})
+
+
+def chat(request):
+    return render(request, 'chat.html')
+
+
+def chat_with_gpt(request):
+    text = request.GET.get('message')
+    client = OpenAI(
+        api_key="06e59f32-2f21-45b1-a1fa-5e34a38c88b1",
+        base_url="https://ark.cn-beijing.volces.com/api/v3",
+    )
+
+    completion = client.chat.completions.create(
+        model="ep-20241203132918-c2dnf",  # your model endpoint ID
+        messages=[
+            {"role": "system",
+             "content": "请你从我这句话中提取出‘地点’和‘价格’，并以‘地点：价格’的方式给我输出，如果没有价格，则只输出‘地点：’。并且输出不要带有附近、左右等估计性的话"},
+            {"role": "user", "content": text},
+        ],
+    )
+    return JsonResponse({'data': completion.choices[0].message.content})

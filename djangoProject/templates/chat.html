@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天机器人</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 500px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+        }
+
+        .user-message {
+            background-color: #cce5ff;
+            align-self: flex-start;
+        }
+
+        .bot-message {
+            background-color: #e2e2e2;
+            align-self: flex-end;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box {
+            width: 80%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .send-btn {
+            width: 100px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script type="text/javascript" src='{% static 'js/jquery.js' %}'></script>
+</head>
+<body>
+<div class="chat-container">
+    <div class="messages" id="messages">
+        <!-- 聊天记录将显示在这里 -->
+    </div>
+    <div class="input-container">
+        <input type="text" class="input-box" id="userInput" placeholder="输入你的问题..."/>
+        <button class="send-btn" onclick="sendMessage()">发送</button>
+    </div>
+</div>
+
+<script>
+    // 使用 jQuery 的 $.ajax() 方法发送 GET 请求
+    function sendMessage() {
+        const userInput = document.getElementById('userInput').value;
+        if (userInput.trim() === '') return;
+
+        // 显示用户输入的消息
+        displayMessage(userInput, 'user');
+
+        // 清空输入框
+        document.getElementById('userInput').value = '';
+
+        $.ajax({
+            url: '/api/getChatResult/',  // 确保你的 URL 路由正确
+            method: "GET",
+            data: {"message": userInput},
+            success: function (data) {
+                // 使用返回的数据更新 DOM 元素
+                if (data.data) {
+                    displayMessage(data.data, 'bot');
+                } else {
+                    displayMessage('机器人出现错误，请稍后再试。', 'bot');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                displayMessage('请求失败，请稍后再试。', 'bot');
+            }
+        });
+    }
+
+    // 显示消息
+    function displayMessage(message, sender) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 滚动到最底部
+    }
+
+</script>
+</body>
+</html>
